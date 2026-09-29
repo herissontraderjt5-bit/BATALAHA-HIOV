@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temporada 3 — Painel de Pontuação</title>
+<style>
+:root{
+  --bg:#f5f7fb; --card:#fff; --text:#172033; --muted:#687386;
+  --line:#e5e9f0; --primary:#4f46e5; --primary2:#6366f1;
+  --green:#059669; --orange:#ea580c; --red:#dc2626; --shadow:0 8px 30px rgba(20,30,55,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.container{max-width:1250px;margin:auto;padding:24px}
+header{
+  background:linear-gradient(135deg,#111827,#312e81 60%,#4f46e5);
+  color:#fff;border-radius:22px;padding:28px;box-shadow:var(--shadow);margin-bottom:20px
+}
+.header-row{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+h1{margin:0 0 8px;font-size:30px}
+.subtitle{margin:0;color:#dbe3ff}
+.badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);padding:8px 12px;border-radius:999px;font-size:13px;white-space:nowrap}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:700}
+.btn-primary{background:#fff;color:#312e81}.btn-secondary{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.2)}
+.btn-dark{background:#111827;color:#fff}.btn-outline{background:#fff;border:1px solid var(--line);color:var(--text)}
+.btn-danger{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+.grid{display:grid;gap:16px}
+.cards{grid-template-columns:repeat(5,minmax(0,1fr));margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:18px;box-shadow:var(--shadow)}
+.metric-label{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.metric{font-size:28px;font-weight:800;margin-top:8px}
+.metric small{font-size:13px;color:var(--muted);font-weight:600}
+.layout{display:grid;grid-template-columns:1.05fr 2fr;gap:18px;align-items:start}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}
+.section-title h2{font-size:18px;margin:0}
+.help{font-size:12px;color:var(--muted)}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+label{font-size:12px;font-weight:700;color:#475569}
+input,textarea,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:#fff;color:var(--text);outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+textarea{min-height:75px;resize:vertical}
+.form-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.rule-table{width:100%;border-collapse:collapse;font-size:12px}
+.rule-table td{padding:8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.rule-table td:last-child{text-align:right;font-weight:800;white-space:nowrap}
+.day-list{display:flex;flex-direction:column;gap:10px}
+.day{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.day-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;background:#fafbfe}
+.day-date{font-weight:800}
+.day-points{font-weight:900;color:var(--primary)}
+.day-body{padding:14px 16px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.stat{background:#f8fafc;border-radius:10px;padding:9px}
+.stat b{display:block;font-size:16px}.stat span{font-size:10px;color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.link{font-size:11px;text-decoration:none;color:#3730a3;background:#eef2ff;padding:6px 8px;border-radius:7px}
+.empty{padding:35px;text-align:center;color:var(--muted);border:1px dashed #cbd5e1;border-radius:14px}
+.note{font-size:12px;color:var(--muted);line-height:1.55}
+.progress{height:8px;background:#e9edf4;border-radius:99px;overflow:hidden;margin-top:8px}
+.progress>div{height:100%;background:linear-gradient(90deg,var(--primary),#8b5cf6);border-radius:99px}
+table.overview{width:100%;border-collapse:collapse;font-size:12px}
+.overview th,.overview td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
+.overview th{color:var(--muted);font-size:11px;text-transform:uppercase}
+.overview td:not(:first-child){text-align:right}
+.tabs{display:flex;gap:7px;margin-bottom:15px;flex-wrap:wrap}
+.tab{padding:8px 12px;border:1px solid var(--line);background:#fff;border-radius:9px;font-weight:700;font-size:12px}
+.tab.active{background:#111827;color:#fff;border-color:#111827}
+.toast{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:12px 16px;border-radius:10px;opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:22px}
+@media(max-width:1050px){.cards{grid-template-columns:repeat(3,1fr)}.layout{grid-template-columns:1fr}}
+@media(max-width:700px){.container{padding:12px}.cards{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.header-row{flex-direction:column}h1{font-size:24px}.card{padding:14px}.overview{min-width:700px}.table-scroll{overflow:auto}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <div class="header-row">
+    <div>
+      <h1>Temporada 3 — Painel de Pontuação</h1>
+      <p class="subtitle">Controle diário de FTDs, redepósitos, vídeos, lives e conteúdos.</p>
+    </div>
+    <div class="badge">22/09/2026 → 31/10/2026</div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary" onclick="novoDia()">+ Adicionar novo dia</button>
+    <button class="btn btn-secondary" onclick="salvar()">💾 Salvar agora</button>
+    <button class="btn btn-secondary" onclick="exportar()">⬇ Exportar backup</button>
+    <label class="btn btn-secondary" style="display:inline-flex;align-items:center">
+      ⬆ Importar backup <input id="importFile" type="file" accept=".json" hidden onchange="importar(event)">
+    </label>
+  </div>
+</header>
+
+<section class="grid cards">
+  <div class="card"><div class="metric-label">Pontos totais</div><div class="metric" id="mPoints">0</div></div>
+  <div class="card"><div class="metric-label">FTDs</div><div class="metric" id="mFtd">0</div></div>
+  <div class="card"><div class="metric-label">Redepósitos</div><div class="metric" id="mRedep">0</div></div>
+  <div class="card"><div class="metric-label">Conteúdos</div><div class="metric" id="mContent">0</div></div>
+  <div class="card"><div class="metric-label">Dias lançados</div><div class="metric" id="mDays">0</div></div>
+</section>
+
+<div class="layout">
+  <aside class="card">
+    <div class="section-title">
+      <h2 id="formTitle">Adicionar dia</h2>
+      <span class="help">Os dados ficam salvos neste navegador.</span>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Data</label>
+        <input type="date" id="date">
+      </div>
+      <div class="field">
+        <label>FTDs / novos depósitos</label>
+        <input type="number" id="ftd" min="0" step="1" value="0">
+      </div>
+      <div class="field">
+        <label>Valor total dos FTDs (US$)</label>
+        <input type="number" id="ftdValue" min="0" step="0.01" value="0">
+      </div>
+      <div class="field">
+        <label>Redepósitos</label>
+        <input type="number" id="redeposits" min="0" step="1" value="0">
+      </div>
+      <div class="field">
+        <label>Valor total dos redepósitos (US$)</label>
+        <input type="number" id="redepositValue" min="0" step="0.01" value="0">
+      </div>
+
+      <div class="field">
+        <label>Vídeos YouTube (mín. 8 min)</label>
+        <input type="number" id="youtube" min="0" step="1" value="0">
+      </div>
+      <div class="field">
+        <label>Lives (mín. 40 min)</label>
+        <input type="number" id="live" min="0" step="1" value="0">
+      </div>
+      <div class="field">
+        <label>Lives Pro</label>
+        <input type="number" id="livePro" min="0" step="1" value="0">
+      </div>
+      <div class="field">
+        <label>Cortes / Reels / Shorts</label>
+        <input type="number" id="shorts" min="0" step="1" value="0">
+      </div>
+      <div class="field">
+        <label>Bônus de alcance (blocos de 10 mil views)</label>
+        <input type="number" id="reach" min="0" step="1" value="0">
+      </div>
+
+      <div class="field full">
+        <label>Links dos vídeos / conteúdos (um por linha)</label>
+        <textarea id="links" placeholder="https://youtube.com/...
+https://tiktok.com/...
+https://instagram.com/..."></textarea>
+      </div>
+      <div class="field full">
+        <label>Links das lives (um por linha)</label>
+        <textarea id="liveLinks" placeholder="Cole aqui os links das lives do dia..."></textarea>
+      </div>
+      <div class="field full">
+        <label>Observações</label>
+        <textarea id="notes" placeholder="Observações do dia, campanhas, clientes, etc."></textarea>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;background:#f8fafc;box-shadow:none">
+      <div class="metric-label">Prévia da pontuação</div>
+      <div class="metric" id="preview">0 pts</div>
+      <div class="note">FTD: 200 pts por cliente + 1 pt por dólar. Redepósito: 1 pt por dólar + 20 pts por redepósito a partir de US$ 10. Conteúdo: YouTube 60, Live 50, Live Pro 100, Corte/Reel/Short 15 e +25 por bloco de 10 mil views.</div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-dark" onclick="salvarDia()">Salvar dia</button>
+      <button class="btn btn-outline" onclick="limparForm()">Limpar</button>
+      <button class="btn btn-danger" onclick="excluirDia()" id="deleteBtn" style="display:none">Excluir dia</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="card">
+      <div class="section-title">
+        <div>
+          <h2>Visão geral por dia</h2>
+          <div class="help">Clique em um dia para editar.</div>
+        </div>
+        <div class="help" id="periodText"></div>
+      </div>
+      <div id="dayList" class="day-list"></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="section-title">
+        <h2>Resumo da temporada</h2>
+        <span class="help">Apuração: 01 e 02/11/2026</span>
+      </div>
+      <div class="table-scroll">
+        <table class="overview">
+          <thead><tr><th>Indicador</th><th>Total</th><th>Pontos</th></tr></thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:16px">
+        <div class="help">Limite do conteúdo: 60% dos pontos de FTD ou 300 pontos, o que for maior.</div>
+        <div class="progress"><div id="contentProgress" style="width:0%"></div></div>
+        <div class="help" id="contentLimitText" style="margin-top:6px"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="section-title"><h2>Regras utilizadas</h2><span class="help">Baseadas nas imagens enviadas</span></div>
+      <table class="rule-table">
+        <tr><td>FTD: cliente novo, depósito mínimo US$ 10 + rollover 50%</td><td>200 pts + 1 pt / US$</td></tr>
+        <tr><td>Redepósito de cliente</td><td>1 pt / US$ + 20 pts a partir de US$ 10</td></tr>
+        <tr><td>Vídeo YouTube, mínimo 8 minutos</td><td>60 pts</td></tr>
+        <tr><td>Live, mínimo 40 minutos</td><td>50 pts</td></tr>
+        <tr><td>Live Pro: câmera ligada + tela dividida com gráfico</td><td>100 pts</td></tr>
+        <tr><td>Corte, Reels ou Short</td><td>15 pts</td></tr>
+        <tr><td>Bônus de alcance</td><td>+25 pts / 10 mil views</td></tr>
+      </table>
+      <p class="note" style="margin-bottom:0">O site calcula o teto do conteúdo separadamente: o máximo de pontos de conteúdo é o maior entre 60% dos pontos de FTD e 300 pontos.</p>
+    </div>
+  </main>
+</div>
+<footer>Temporada 3 • Painel local • Os dados são armazenados no navegador usando localStorage.</footer>
+</div>
+<div class="toast" id="toast">Salvo!</div>
+
+<script>
+const KEY='temporada3_painel_v1';
+const START='2026-09-22', END='2026-10-31';
+let days=JSON.parse(localStorage.getItem(KEY)||'[]');
+let editingIndex=-1;
+
+const $=id=>document.getElementById(id);
+const n=id=>Math.max(0, Number($(id).value)||0);
+
+function calc(d){
+  const ftdPoints = d.ftd*200 + d.ftdValue;
+  const redepBonusCount = d.redepositValue>=10 ? d.redeposits : 0;
+  const redepPoints = d.redepositValue + redepBonusCount*20;
+  const rawContent =
+    d.youtube*60 + d.live*50 + d.livePro*100 + d.shorts*15 + d.reach*25;
+  const contentLimit = Math.max(ftdPoints*0.60,300);
+  const contentPoints = Math.min(rawContent, contentLimit);
+  return {ftdPoints,redepPoints,rawContent,contentLimit,contentPoints,total:ftdPoints+redepPoints+contentPoints};
+}
+function formData(){
+  return {
+    date:$('date').value, ftd:n('ftd'), ftdValue:n('ftdValue'),
+    redeposits:n('redeposits'), redepositValue:n('redepositValue'),
+    youtube:n('youtube'), live:n('live'), livePro:n('livePro'), shorts:n('shorts'),
+    reach:n('reach'), links:$('links').value.trim(), liveLinks:$('liveLinks').value.trim(),
+    notes:$('notes').value.trim()
+  };
+}
+function fmt(v){return Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:2});}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function dateBR(s){if(!s)return'';const [y,m,d]=s.split('-');return `${d}/${m}/${y}`;}
+function saveStorage(){localStorage.setItem(KEY,JSON.stringify(days));}
+function toast(msg='Salvo!'){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800);}
+
+function render(){
+  days.sort((a,b)=>a.date.localeCompare(b.date));
+  let total=0, ftd=0, redep=0, content=0, ftdPts=0, redepPts=0, rawContent=0, limit=0;
+  days.forEach(d=>{const c=calc(d);total+=c.total;ftd+=d.ftd;redep+=d.redeposits;content+=d.youtube+d.live+d.livePro+d.shorts;ftdPts+=c.ftdPoints;redepPts+=c.redepPoints;rawContent+=c.rawContent;limit+=c.contentLimit;});
+  $('mPoints').textContent=fmt(total)+' pts'; $('mFtd').textContent=fmt(ftd);
+  $('mRedep').textContent=fmt(redep); $('mContent').textContent=fmt(content); $('mDays').textContent=days.length;
+  $('periodText').textContent=`${days.length} dia(s) registrado(s)`;
+  const list=$('dayList');
+  if(!days.length){list.innerHTML='<div class="empty">Nenhum dia lançado ainda.<br><br>Clique em <b>Adicionar novo dia</b> para começar.</div>';}
+  else{
+    list.innerHTML=days.map((d,i)=>{
+      const c=calc(d);
+      const linkArr=(d.links||'').split(/\n+/).filter(Boolean);
+      const liveArr=(d.liveLinks||'').split(/\n+/).filter(Boolean);
+      return `<div class="day">
+        <div class="day-head"><div><div class="day-date">${dateBR(d.date)}</div><div class="help">${d.notes?esc(d.notes):'Sem observações'}</div></div>
+        <div style="text-align:right"><div class="day-points">${fmt(c.total)} pts</div><button class="btn btn-outline" style="padding:6px 9px;font-size:11px;margin-top:5px" onclick="editarDia(${i})">Editar</button></div></div>
+        <div class="day-body">
+          <div class="stats">
+            <div class="stat"><b>${fmt(d.ftd)}</b><span>FTDs</span></div>
+            <div class="stat"><b>${fmt(d.redeposits)}</b><span>Redepósitos</span></div>
+            <div class="stat"><b>${fmt(d.youtube+d.live+d.livePro+d.shorts)}</b><span>Conteúdos</span></div>
+            <div class="stat"><b>${fmt(c.contentPoints)}</b><span>Pts conteúdo</span></div>
+          </div>
+          <div class="help">FTD: ${fmt(c.ftdPoints)} pts • Redepósito: ${fmt(c.redepPoints)} pts • Conteúdo bruto: ${fmt(c.rawContent)} pts • Teto: ${fmt(c.contentLimit)} pts</div>
+          ${(linkArr.length||liveArr.length)?`<div class="links">${linkArr.concat(liveArr).map((u,j)=>`<a class="link" href="${esc(u)}" target="_blank" rel="noopener">🔗 Link ${j+1}</a>`).join('')}</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+  $('summaryBody').innerHTML=`
+    <tr><td>FTDs / novos depósitos</td><td>${fmt(ftd)}</td><td>${fmt(ftdPts)} pts</td></tr>
+    <tr><td>Redepósitos</td><td>${fmt(redep)}</td><td>${fmt(redepPts)} pts</td></tr>
+    <tr><td>Conteúdo bruto</td><td>${fmt(content)}</td><td>${fmt(rawContent)} pts</td></tr>
+    <tr><td><b>Conteúdo considerado após teto</b></td><td>—</td><td><b>${fmt(days.reduce((s,d)=>s+calc(d).contentPoints,0))} pts</b></td></tr>
+    <tr><td><b>Total geral</b></td><td>—</td><td><b>${fmt(total)} pts</b></td></tr>`;
+  const actualContent=days.reduce((s,d)=>s+calc(d).contentPoints,0);
+  const pct=limit?Math.min(100,(actualContent/limit)*100):0;
+  $('contentProgress').style.width=pct+'%';
+  $('contentLimitText').textContent=`Teto acumulado estimado: ${fmt(limit)} pts • Conteúdo considerado: ${fmt(actualContent)} pts`;
+  updatePreview();
+}
+function updatePreview(){
+  const d=formData(); if(!d.date){$('preview').textContent='0 pts';return}
+  const c=calc(d); $('preview').textContent=fmt(c.total)+' pts';
+}
+function setDefaultDate(){
+  const today=new Date().toISOString().slice(0,10);
+  const existing=days.map(x=>x.date);
+  let d=(today>=START&&today<=END&&!existing.includes(today))?today:'';
+  if(!d){for(let t=START;t<=END;t=addDays(t,1)){if(!existing.includes(t)){d=t;break}}}
+  $('date').value=d||today;
+}
+function addDays(date,daysToAdd){const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+daysToAdd);return d.toISOString().slice(0,10);}
+function novoDia(){editingIndex=-1;$('formTitle').textContent='Adicionar dia';$('deleteBtn').style.display='none';limparForm(true);setDefaultDate();window.scrollTo({top:0,behavior:'smooth'});}
+function limparForm(keepDate=false){
+  const old=keepDate?$('date').value:'';
+  ['ftd','ftdValue','redeposits','redepositValue','youtube','live','livePro','shorts','reach'].forEach(id=>$(id).value=0);
+  $('links').value='';$('liveLinks').value='';$('notes').value='';
+  if(!keepDate)$('date').value=old;
+  if(!keepDate)setDefaultDate();
+  updatePreview();
+}
+function preencher(d){
+  Object.keys(d).forEach(k=>{if($(k))$(k).value=d[k]});
+}
+function editarDia(i){editingIndex=i;preencher(days[i]);$('formTitle').textContent='Editar '+dateBR(days[i].date);$('deleteBtn').style.display='inline-block';window.scrollTo({top:0,behavior:'smooth'});updatePreview();}
+function salvarDia(){
+  const d=formData();
+  if(!d.date){toast('Escolha uma data');return}
+  if(d.date<START||d.date>END){if(!confirm('A data está fora da temporada 22/09/2026 a 31/10/2026. Deseja continuar?'))return}
+  if(editingIndex>=0) days[editingIndex]=d; else {
+    const same=days.findIndex(x=>x.date===d.date);
+    if(same>=0){days[same]=d;editingIndex=same;} else days.push(d);
+  }
+  saveStorage();render();toast('Dia salvo com sucesso!');
+  $('formTitle').textContent='Editar '+dateBR(d.date);$('deleteBtn').style.display='inline-block';
+}
+function excluirDia(){
+  if(editingIndex<0)return;
+  if(confirm('Excluir este dia e todos os dados dele?')){days.splice(editingIndex,1);saveStorage();render();novoDia();toast('Dia excluído');}
+}
+function salvar(){saveStorage();toast('Dados salvos neste navegador!');}
+function exportar(){
+  const blob=new Blob([JSON.stringify({version:1,season:'Temporada 3',start:START,end:END,days},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='temporada3-backup.json';a.click();URL.revokeObjectURL(a.href);toast('Backup exportado!');
+}
+function importar(e){
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();r.onload=()=>{try{
+    const data=JSON.parse(r.result); if(!Array.isArray(data.days))throw new Error();
+    days=data.days;saveStorage();render();toast('Backup importado!');
+  }catch(err){toast('Arquivo de backup inválido.')}};r.readAsText(file);e.target.value='';
+}
+['date','ftd','ftdValue','redeposits','redepositValue','youtube','live','livePro','shorts','reach'].forEach(id=>$(id).addEventListener('input',updatePreview));
+novoDia();render();
+</script>
+</body>
+</html>
